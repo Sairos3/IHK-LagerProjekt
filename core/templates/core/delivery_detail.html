@@ -1,0 +1,47 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<h2>Delivery Note {{ delivery.delivery_number }}</h2>
+
+<div class="card p-3 mb-3">
+    <p><strong>Invoice:</strong>
+        {% if delivery.invoice %}
+            <a href="/invoices/{{ delivery.invoice.id }}/">{{ delivery.invoice.invoice_number }}</a>
+        {% else %}
+            <span class="text-muted">Not assigned</span>
+        {% endif %}
+    </p>
+    <p><strong>Supplier:</strong> {{ delivery.supplier_name }}</p>
+    <p><strong>Date:</strong> {{ delivery.delivery_date }}</p>
+    <p><strong>Created at:</strong> {{ delivery.created_at }}</p>
+</div>
+
+<div class="mb-3">
+    <a class="btn btn-secondary" href="/deliveries/{{ delivery.id }}/add-item/">Add Item</a>
+</div>
+
+<h4>Delivery Items</h4>
+<table class="table table-bordered">
+    <tr>
+        <th>Item</th>
+        <th>Quantity</th>
+        <th>Unit</th>
+        <th>Action</th>
+    </tr>
+    {% for item in delivery.items.all %}
+    <tr>
+        <td>{{ item.item_name }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>{{ item.unit }}</td>
+        <td>
+            <a class="btn btn-sm btn-outline-primary" href="/delivery-items/{{ item.id }}/edit/">Edit</a>
+            <a class="btn btn-sm btn-outline-danger" href="/delivery-items/{{ item.id }}/delete/">Delete</a>
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="4" class="text-muted">No items available</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

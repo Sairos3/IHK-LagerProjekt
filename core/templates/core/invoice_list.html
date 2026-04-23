@@ -1,0 +1,38 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<h2>Invoices</h2>
+<a class="btn btn-primary mb-3" href="/invoices/create/">Create Invoice</a>
+
+<table class="table table-bordered">
+    <tr>
+        <th>Number</th>
+        <th>Supplier</th>
+        <th>Date</th>
+        <th>Status</th>
+        <th>Items</th>
+        <th>Deliveries</th>
+        <th>Action</th>
+    </tr>
+    {% for invoice in invoices %}
+    <tr>
+        <td>{{ invoice.invoice_number }}</td>
+        <td>{{ invoice.supplier_name }}</td>
+        <td>{{ invoice.invoice_date }}</td>
+        <td>{{ invoice.get_status_display }}</td>
+        <td>
+            {% for item in invoice.items.all %}
+                <div>{{ item.item_name }} - {{ item.quantity }} {{ item.unit }}</div>
+            {% empty %}
+                <span class="text-muted">No items</span>
+            {% endfor %}
+        </td>
+        <td>{{ invoice.delivery_notes.count }}</td>
+        <td>
+            <a class="btn btn-sm btn-outline-primary" href="/invoices/{{ invoice.id }}/">Open</a>
+            <a class="btn btn-sm btn-secondary" href="/invoices/{{ invoice.id }}/add-item/">Add Item</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<h2>Delivery Notes</h2>
+<a class="btn btn-primary mb-3" href="/deliveries/create/">Create Delivery Note</a>
+
+<table class="table table-bordered">
+    <tr>
+        <th>Number</th>
+        <th>Invoice</th>
+        <th>Supplier</th>
+        <th>Date</th>
+        <th>Items</th>
+        <th>Action</th>
+    </tr>
+    {% for delivery in deliveries %}
+    <tr>
+        <td>{{ delivery.delivery_number }}</td>
+        <td>
+            {% if delivery.invoice %}
+                {{ delivery.invoice.invoice_number }}
+            {% else %}
+                <span class="text-muted">Not assigned</span>
+            {% endif %}
+        </td>
+        <td>{{ delivery.supplier_name }}</td>
+        <td>{{ delivery.delivery_date }}</td>
+        <td>
+            {% for item in delivery.items.all %}
+                <div>{{ item.item_name }} - {{ item.quantity }} {{ item.unit }}</div>
+            {% empty %}
+                <span class="text-muted">No items</span>
+            {% endfor %}
+        </td>
+        <td>
+            <a class="btn btn-sm btn-outline-primary" href="/deliveries/{{ delivery.id }}/">Open</a>
+            <a class="btn btn-sm btn-secondary" href="/deliveries/{{ delivery.id }}/add-item/">Add Item</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

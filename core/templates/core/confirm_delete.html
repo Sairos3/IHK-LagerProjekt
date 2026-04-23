@@ -1,0 +1,15 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<h2>{{ title }}</h2>
+
+<div class="alert alert-warning">
+    {{ message }}
+</div>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a href="javascript:history.back()" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

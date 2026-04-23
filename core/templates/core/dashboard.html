@@ -1,0 +1,54 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<h1 class="mb-4">Dashboard</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card p-3 mb-3">
+            <h5>Invoices</h5>
+            <p>{{ invoices }}</p>
+            <a class="btn btn-sm btn-primary" href="/invoices/">Open</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3 mb-3">
+            <h5>Deliveries</h5>
+            <p>{{ deliveries }}</p>
+            <a class="btn btn-sm btn-primary" href="/deliveries/">Open</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3 mb-3">
+            <h5>Stock Items</h5>
+            <p>{{ stock_items }}</p>
+            <a class="btn btn-sm btn-primary" href="/stock/">Open</a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card p-3 mb-3">
+            <h5>Open</h5>
+            <p>{{ open_invoices }}</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3 mb-3">
+            <h5>Partial</h5>
+            <p>{{ partial_invoices }}</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3 mb-3">
+            <h5>Complete</h5>
+            <p>{{ complete_invoices }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a class="btn btn-success" href="/compare/">Run Comparison</a>
+</div>
+{% endblock %}

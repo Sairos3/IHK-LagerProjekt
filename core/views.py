@@ -1,0 +1,290 @@
+from collections import defaultdict
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect, render
+
+from .forms import (
+    DeliveryItemForm,
+    DeliveryNoteForm,
+    InvoiceForm,
+    InvoiceItemForm,
+    StockMovementForm,
+)
+from .models import DeliveryItem, DeliveryNote, Invoice, InvoiceItem, StockItem, StockMovement
+
+
+@login_required
+def dashboard(request):
+    return render(request, 'core/dashboard.html', {
+        'invoices': Invoice.objects.count(),
+        'deliveries': DeliveryNote.objects.count(),
+        'stock_items': StockItem.objects.count(),
+        'open_invoices': Invoice.objects.filter(status='open').count(),
+        'partial_invoices': Invoice.objects.filter(status='partial').count(),
+        'complete_invoices': Invoice.objects.filter(status='complete').count(),
+    })
+
+
+@login_required
+def invoice_list(request):
+    invoices = Invoice.objects.all().order_by('-created_at')
+    return render(request, 'core/invoice_list.html', {'invoices': invoices})
+
+
+@login_required
+def invoice_create(request):
+    if request.method == 'POST':
+        form = InvoiceForm(request.POST, request.FILES)
+        if form.is_valid():
+            invoice = form.save(commit=False)
+            invoice.created_by = request.user
+            invoice.save()
+            return redirect('invoice_list')
+    else:
+        form = InvoiceForm()
+    return render(request, 'core/form.html', {'form': form, 'title': 'Create Invoice'})
+
+
+@login_required
+def invoice_item_add(request, invoice_id):
+    invoice = get_object_or_404(Invoice, id=invoice_id)
+    if request.method == 'POST':
+        form = InvoiceItemForm(request.POST)
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.invoice = invoice
+            item.save()
+            return redirect('invoice_list')
+    else:
+        form = InvoiceItemForm()
+    return render(request, 'core/form.html', {
+        'form': form,
+        'title': f'Add Item to Invoice {invoice.invoice_number}'
+    })
+
+
+@login_required
+def delivery_list(request):
+    deliveries = DeliveryNote.objects.all().order_by('-created_at')
+    return render(request, 'core/delivery_list.html', {'deliveries': deliveries})
+
+
+@login_required
+def delivery_create(request):
+    if request.method == 'POST':
+        form = DeliveryNoteForm(request.POST, request.FILES)
+        if form.is_valid():
+            delivery = form.save(commit=False)
+            delivery.created_by = request.user
+            delivery.save()
+            return redirect('delivery_list')
+    else:
+        form = DeliveryNoteForm()
+    return render(request, 'core/form.html', {'form': form, 'title': 'Create Delivery Note'})
+
+
+@login_required
+def delivery_item_add(request, delivery_id):
+    delivery = get_object_or_404(DeliveryNote, id=delivery_id)
+    if request.method == 'POST':
+        form = DeliveryItemForm(request.POST)
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.delivery_note = delivery
+            item.save()
+            return redirect('delivery_list')
+    else:
+        form = DeliveryItemForm()
+    return render(request, 'core/form.html', {
+        'form': form,
+        'title': f'Add Item to Delivery {delivery.delivery_number}'
+    })
+
+
+@login_required
+def compare_documents(request):
+    invoices = Invoice.objects.prefetch_related('items', 'delivery_notes__items').all()
+    results = []
+
+    for invoice in invoices:
+        delivered_map = defaultdict(int)
+
+        for delivery_note in invoice.delivery_notes.all():
+            for delivery_item in delivery_note.items.all():
+                key = delivery_item.item_name.strip().lower()
+                delivered_map[key] += delivery_item.quantity
+
+        invoice_status = 'complete' if invoice.items.exists() else 'open'
+
+        for invoice_item in invoice.items.all():
+            key = invoice_item.item_name.strip().lower()
+            delivered_qty = delivered_map.get(key, 0)
+            difference = delivered_qty - invoice_item.quantity
+
+            if delivered_qty == 0:
+                status = 'Open'
+                invoice_status = 'open'
+            elif delivered_qty < invoice_item.quantity:
+                status = 'Partial'
+                invoice_status = 'partial'
+            elif delivered_qty == invoice_item.quantity:
+                status = 'Complete'
+            else:
+                status = 'Difference'
+                invoice_status = 'difference'
+
+            results.append({
+                'invoice': invoice.invoice_number,
+                'item_name': invoice_item.item_name,
+                'expected_quantity': invoice_item.quantity,
+                'delivered_quantity': delivered_qty,
+                'difference': difference,
+                'status': status,
+            })
+
+        invoice.status = invoice_status
+        invoice.save()
+
+    return render(request, 'core/compare.html', {'results': results})
+
+
+@login_required
+def stock_list(request):
+    stock_items = StockItem.objects.all().order_by('item_name')
+    return render(request, 'core/stock_list.html', {'stock_items': stock_items})
+
+
+@login_required
+def apply_stock_from_deliveries(request):
+    delivery_items = DeliveryItem.objects.all()
+    aggregated = defaultdict(int)
+
+    for item in delivery_items:
+        aggregated[item.item_name.strip()] += item.quantity
+
+    for item_name, quantity in aggregated.items():
+        stock_item, _ = StockItem.objects.get_or_create(item_name=item_name)
+        change = quantity - stock_item.current_quantity
+
+        if change != 0:
+            stock_item.current_quantity = quantity
+            stock_item.save()
+
+            StockMovement.objects.create(
+                stock_item=stock_item,
+                movement_type='goods_receipt',
+                quantity_change=change,
+                reason='Automatic stock update from deliveries',
+                created_by=request.user
+            )
+
+    return redirect('stock_list')
+
+
+@login_required
+def stock_movement_create(request):
+    if request.method == 'POST':
+        form = StockMovementForm(request.POST)
+        if form.is_valid():
+            movement = form.save(commit=False)
+            movement.created_by = request.user
+            movement.save()
+
+            stock_item = movement.stock_item
+            stock_item.current_quantity += movement.quantity_change
+            stock_item.save()
+
+            return redirect('stock_list')
+    else:
+        form = StockMovementForm()
+    return render(request, 'core/form.html', {'form': form, 'title': 'Create Stock Movement'})
+
+
+@login_required
+def invoice_detail(request, invoice_id):
+    invoice = get_object_or_404(
+        Invoice.objects.prefetch_related('items', 'delivery_notes__items'),
+        id=invoice_id
+    )
+    return render(request, 'core/invoice_detail.html', {'invoice': invoice})
+
+
+@login_required
+def delivery_detail(request, delivery_id):
+    delivery = get_object_or_404(
+        DeliveryNote.objects.prefetch_related('items'),
+        id=delivery_id
+    )
+    return render(request, 'core/delivery_detail.html', {'delivery': delivery})
+
+
+@login_required
+def stock_movement_list(request):
+    movements = StockMovement.objects.select_related('stock_item', 'created_by').order_by('-created_at')
+    return render(request, 'core/stock_movement_list.html', {'movements': movements})
+
+
+@login_required
+def invoice_item_edit(request, item_id):
+    item = get_object_or_404(InvoiceItem, id=item_id)
+    if request.method == 'POST':
+        form = InvoiceItemForm(request.POST, instance=item)
+        if form.is_valid():
+            form.save()
+            return redirect('invoice_detail', invoice_id=item.invoice.id)
+    else:
+        form = InvoiceItemForm(instance=item)
+
+    return render(request, 'core/form.html', {
+        'form': form,
+        'title': f'Edit Invoice Item: {item.item_name}'
+    })
+
+
+@login_required
+def invoice_item_delete(request, item_id):
+    item = get_object_or_404(InvoiceItem, id=item_id)
+    invoice_id = item.invoice.id
+
+    if request.method == 'POST':
+        item.delete()
+        return redirect('invoice_detail', invoice_id=invoice_id)
+
+    return render(request, 'core/confirm_delete.html', {
+        'title': 'Delete Invoice Item',
+        'message': f'Are you sure you want to delete "{item.item_name}" from invoice {item.invoice.invoice_number}?'
+    })
+
+
+@login_required
+def delivery_item_edit(request, item_id):
+    item = get_object_or_404(DeliveryItem, id=item_id)
+    if request.method == 'POST':
+        form = DeliveryItemForm(request.POST, instance=item)
+        if form.is_valid():
+            form.save()
+            return redirect('delivery_detail', delivery_id=item.delivery_note.id)
+    else:
+        form = DeliveryItemForm(instance=item)
+
+    return render(request, 'core/form.html', {
+        'form': form,
+        'title': f'Edit Delivery Item: {item.item_name}'
+    })
+
+
+@login_required
+def delivery_item_delete(request, item_id):
+    item = get_object_or_404(DeliveryItem, id=item_id)
+    delivery_id = item.delivery_note.id
+
+    if request.method == 'POST':
+        item.delete()
+        return redirect('delivery_detail', delivery_id=delivery_id)
+
+    return render(request, 'core/confirm_delete.html', {
+        'title': 'Delete Delivery Item',
+        'message': f'Are you sure you want to delete "{item.item_name}" from delivery {item.delivery_note.delivery_number}?'
+    })
+
+

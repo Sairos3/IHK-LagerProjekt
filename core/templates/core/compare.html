@@ -1,0 +1,28 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<h2>Comparison Results</h2>
+
+<table class="table table-bordered">
+    <tr>
+        <th>Invoice</th>
+        <th>Item</th>
+        <th>Expected</th>
+        <th>Delivered</th>
+        <th>Difference</th>
+        <th>Status</th>
+    </tr>
+    {% for row in results %}
+    <tr>
+        <td>{{ row.invoice }}</td>
+        <td>{{ row.item_name }}</td>
+        <td>{{ row.expected_quantity }}</td>
+        <td>{{ row.delivered_quantity }}</td>
+        <td>{{ row.difference }}</td>
+        <td>{{ row.status }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<a class="btn btn-success" href="/stock/apply/">Apply Stock from Deliveries</a>
+{% endblock %}

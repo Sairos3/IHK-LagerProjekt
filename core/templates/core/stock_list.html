@@ -1,0 +1,25 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<h2>Stock</h2>
+
+<div class="mb-3 d-flex gap-2">
+    <a class="btn btn-primary" href="/stock/movement/add/">Add Stock Movement</a>
+    <a class="btn btn-outline-secondary" href="/stock/movements/">View Stock Movements</a>
+</div>
+
+<table class="table table-bordered">
+    <tr>
+        <th>Item</th>
+        <th>Current Quantity</th>
+        <th>Updated At</th>
+    </tr>
+    {% for item in stock_items %}
+    <tr>
+        <td>{{ item.item_name }}</td>
+        <td>{{ item.current_quantity }}</td>
+        <td>{{ item.updated_at }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
