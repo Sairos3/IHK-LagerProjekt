@@ -30,7 +30,8 @@
         <td>{{ invoice.delivery_notes.count }}</td>
         <td>
             <a class="btn btn-sm btn-outline-primary" href="/invoices/{{ invoice.id }}/">Open</a>
-            <a class="btn btn-sm btn-secondary" href="/invoices/{{ invoice.id }}/add-item/">Add Item</a>
+            <a class="btn btn-sm btn-outline-secondary" href="/invoices/{{ invoice.id }}/edit/">Edit</a>
+            <a class="btn btn-sm btn-outline-danger" href="/invoices/{{ invoice.id }}/delete/">Delete</a>
         </td>
     </tr>
     {% endfor %}

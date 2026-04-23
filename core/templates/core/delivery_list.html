@@ -34,7 +34,8 @@
         </td>
         <td>
             <a class="btn btn-sm btn-outline-primary" href="/deliveries/{{ delivery.id }}/">Open</a>
-            <a class="btn btn-sm btn-secondary" href="/deliveries/{{ delivery.id }}/add-item/">Add Item</a>
+            <a class="btn btn-sm btn-outline-secondary" href="/deliveries/{{ delivery.id }}/edit/">Edit</a>
+            <a class="btn btn-sm btn-outline-danger" href="/deliveries/{{ delivery.id }}/delete/">Delete</a>
         </td>
     </tr>
     {% endfor %}

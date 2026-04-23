@@ -288,3 +288,69 @@ def delivery_item_delete(request, item_id):
     })
 
 
+@login_required
+def invoice_edit(request, invoice_id):
+    invoice = get_object_or_404(Invoice, id=invoice_id)
+    if request.method == 'POST':
+        form = InvoiceForm(request.POST, request.FILES, instance=invoice)
+        if form.is_valid():
+            updated_invoice = form.save(commit=False)
+            updated_invoice.created_by = invoice.created_by
+            updated_invoice.save()
+            return redirect('invoice_detail', invoice_id=invoice.id)
+    else:
+        form = InvoiceForm(instance=invoice)
+
+    return render(request, 'core/form.html', {
+        'form': form,
+        'title': f'Edit Invoice {invoice.invoice_number}'
+    })
+
+
+@login_required
+def invoice_delete(request, invoice_id):
+    invoice = get_object_or_404(Invoice, id=invoice_id)
+
+    if request.method == 'POST':
+        invoice.delete()
+        return redirect('invoice_list')
+
+    return render(request, 'core/confirm_delete.html', {
+        'title': 'Delete Invoice',
+        'message': f'Are you sure you want to delete invoice "{invoice.invoice_number}"? All linked invoice items and delivery notes will also be deleted.'
+    })
+
+
+@login_required
+def delivery_edit(request, delivery_id):
+    delivery = get_object_or_404(DeliveryNote, id=delivery_id)
+    if request.method == 'POST':
+        form = DeliveryNoteForm(request.POST, request.FILES, instance=delivery)
+        if form.is_valid():
+            updated_delivery = form.save(commit=False)
+            updated_delivery.created_by = delivery.created_by
+            updated_delivery.save()
+            return redirect('delivery_detail', delivery_id=delivery.id)
+    else:
+        form = DeliveryNoteForm(instance=delivery)
+
+    return render(request, 'core/form.html', {
+        'form': form,
+        'title': f'Edit Delivery Note {delivery.delivery_number}'
+    })
+
+
+@login_required
+def delivery_delete(request, delivery_id):
+    delivery = get_object_or_404(DeliveryNote, id=delivery_id)
+
+    if request.method == 'POST':
+        delivery.delete()
+        return redirect('delivery_list')
+
+    return render(request, 'core/confirm_delete.html', {
+        'title': 'Delete Delivery Note',
+        'message': f'Are you sure you want to delete delivery note "{delivery.delivery_number}"? All linked delivery items will also be deleted.'
+    })
+
+

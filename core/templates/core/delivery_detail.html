@@ -16,7 +16,9 @@
     <p><strong>Created at:</strong> {{ delivery.created_at }}</p>
 </div>
 
-<div class="mb-3">
+<div class="mb-3 d-flex gap-2">
+    <a class="btn btn-primary" href="/deliveries/{{ delivery.id }}/edit/">Edit Delivery</a>
+    <a class="btn btn-danger" href="/deliveries/{{ delivery.id }}/delete/">Delete Delivery</a>
     <a class="btn btn-secondary" href="/deliveries/{{ delivery.id }}/add-item/">Add Item</a>
 </div>
 

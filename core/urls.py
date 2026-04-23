@@ -7,13 +7,17 @@ urlpatterns = [
     path('invoices/', views.invoice_list, name='invoice_list'),
     path('invoices/create/', views.invoice_create, name='invoice_create'),
     path('invoices/<int:invoice_id>/', views.invoice_detail, name='invoice_detail'),
+    path('invoices/<int:invoice_id>/edit/', views.invoice_edit, name='invoice_edit'),
+    path('invoices/<int:invoice_id>/delete/', views.invoice_delete, name='invoice_delete'),
     path('invoices/<int:invoice_id>/add-item/', views.invoice_item_add, name='invoice_item_add'),
 
     path('deliveries/', views.delivery_list, name='delivery_list'),
     path('deliveries/create/', views.delivery_create, name='delivery_create'),
     path('deliveries/<int:delivery_id>/', views.delivery_detail, name='delivery_detail'),
+    path('deliveries/<int:delivery_id>/edit/', views.delivery_edit, name='delivery_edit'),
+    path('deliveries/<int:delivery_id>/delete/', views.delivery_delete, name='delivery_delete'),
     path('deliveries/<int:delivery_id>/add-item/', views.delivery_item_add, name='delivery_item_add'),
-
+   
     path('invoice-items/<int:item_id>/edit/', views.invoice_item_edit, name='invoice_item_edit'),
     path('invoice-items/<int:item_id>/delete/', views.invoice_item_delete, name='invoice_item_delete'),
 
