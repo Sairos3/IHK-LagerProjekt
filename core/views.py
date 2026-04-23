@@ -137,17 +137,19 @@ def delivery_item_add(request, delivery_id):
 @login_required
 def compare_documents(request):
     invoices = Invoice.objects.prefetch_related('items', 'delivery_notes__items').all()
-    results = []
+    grouped_results = []
 
     for invoice in invoices:
         delivered_map = defaultdict(int)
+        linked_deliveries = list(invoice.delivery_notes.all())
 
-        for delivery_note in invoice.delivery_notes.all():
+        for delivery_note in linked_deliveries:
             for delivery_item in delivery_note.items.all():
                 key = delivery_item.item_name.strip().lower()
                 delivered_map[key] += delivery_item.quantity
 
         invoice_status = 'complete' if invoice.items.exists() else 'open'
+        item_results = []
 
         for invoice_item in invoice.items.all():
             key = invoice_item.item_name.strip().lower()
@@ -162,12 +164,13 @@ def compare_documents(request):
                 invoice_status = 'partial'
             elif delivered_qty == invoice_item.quantity:
                 status = 'Complete'
+                if invoice_status not in ['open', 'partial', 'difference']:
+                    invoice_status = 'complete'
             else:
                 status = 'Difference'
                 invoice_status = 'difference'
 
-            results.append({
-                'invoice': invoice.invoice_number,
+            item_results.append({
                 'item_name': invoice_item.item_name,
                 'expected_quantity': invoice_item.quantity,
                 'delivered_quantity': delivered_qty,
@@ -178,7 +181,13 @@ def compare_documents(request):
         invoice.status = invoice_status
         invoice.save()
 
-    return render(request, 'core/compare.html', {'results': results})
+        grouped_results.append({
+            'invoice': invoice,
+            'deliveries': linked_deliveries,
+            'items': item_results,
+        })
+
+    return render(request, 'core/compare.html', {'grouped_results': grouped_results})
 
 
 @login_required

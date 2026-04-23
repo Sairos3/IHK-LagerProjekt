@@ -3,26 +3,78 @@
 {% block content %}
 <h2>Comparison Results</h2>
 
-<table class="table table-bordered">
-    <tr>
-        <th>Invoice</th>
-        <th>Item</th>
-        <th>Expected</th>
-        <th>Delivered</th>
-        <th>Difference</th>
-        <th>Status</th>
-    </tr>
-    {% for row in results %}
-    <tr>
-        <td>{{ row.invoice }}</td>
-        <td>{{ row.item_name }}</td>
-        <td>{{ row.expected_quantity }}</td>
-        <td>{{ row.delivered_quantity }}</td>
-        <td>{{ row.difference }}</td>
-        <td>{{ row.status }}</td>
-    </tr>
-    {% endfor %}
-</table>
+<div class="mb-3">
+    <a class="btn btn-success" href="/stock/apply/">Apply Stock from Deliveries</a>
+</div>
 
-<a class="btn btn-success" href="/stock/apply/">Apply Stock from Deliveries</a>
+{% for group in grouped_results %}
+<div class="card mb-4">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <strong>Invoice:</strong> {{ group.invoice.invoice_number }}<br>
+                <strong>Supplier:</strong> {{ group.invoice.supplier_name }}<br>
+                <strong>Date:</strong> {{ group.invoice.invoice_date }}
+            </div>
+            <div>
+                <span class="badge
+                    {% if group.invoice.status == 'complete' %}bg-success
+                    {% elif group.invoice.status == 'partial' %}bg-warning text-dark
+                    {% elif group.invoice.status == 'difference' %}bg-danger
+                    {% else %}bg-secondary
+                    {% endif %}">
+                    {{ group.invoice.get_status_display }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <p>
+            <strong>Linked Delivery Notes:</strong>
+            {% for delivery in group.deliveries %}
+                <a href="/deliveries/{{ delivery.id }}/">{{ delivery.delivery_number }}</a>{% if not forloop.last %}, {% endif %}
+            {% empty %}
+                <span class="text-muted">No linked delivery notes</span>
+            {% endfor %}
+        </p>
+
+        <table class="table table-bordered">
+            <tr>
+                <th>Item</th>
+                <th>Expected</th>
+                <th>Delivered</th>
+                <th>Difference</th>
+                <th>Status</th>
+            </tr>
+            {% for item in group.items %}
+            <tr>
+                <td>{{ item.item_name }}</td>
+                <td>{{ item.expected_quantity }}</td>
+                <td>{{ item.delivered_quantity }}</td>
+                <td>{{ item.difference }}</td>
+                <td>
+                    <span class="badge
+                        {% if item.status == 'Complete' %}bg-success
+                        {% elif item.status == 'Partial' %}bg-warning text-dark
+                        {% elif item.status == 'Difference' %}bg-danger
+                        {% else %}bg-secondary
+                        {% endif %}">
+                        {{ item.status }}
+                    </span>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-muted">No invoice items available</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+{% empty %}
+<div class="alert alert-info">
+    No comparison data available.
+</div>
+{% endfor %}
 {% endblock %}
