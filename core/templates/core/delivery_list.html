@@ -2,6 +2,20 @@
 
 {% block content %}
 <h2>Delivery Notes</h2>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-4">
+        <input type="text" name="search" value="{{ search }}" class="form-control" placeholder="Delivery number">
+    </div>
+    <div class="col-md-4">
+        <input type="text" name="supplier" value="{{ supplier }}" class="form-control" placeholder="Supplier">
+    </div>
+    <div class="col-md-4 d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <a href="/deliveries/" class="btn btn-secondary">Reset</a>
+    </div>
+</form>
+
 <a class="btn btn-primary mb-3" href="/deliveries/create/">Create Delivery Note</a>
 
 <table class="table table-bordered">
@@ -37,6 +51,10 @@
             <a class="btn btn-sm btn-outline-secondary" href="/deliveries/{{ delivery.id }}/edit/">Edit</a>
             <a class="btn btn-sm btn-outline-danger" href="/deliveries/{{ delivery.id }}/delete/">Delete</a>
         </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="6" class="text-muted">No delivery notes found</td>
     </tr>
     {% endfor %}
 </table>

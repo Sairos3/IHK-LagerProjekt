@@ -28,7 +28,26 @@ def dashboard(request):
 @login_required
 def invoice_list(request):
     invoices = Invoice.objects.all().order_by('-created_at')
-    return render(request, 'core/invoice_list.html', {'invoices': invoices})
+
+    search = request.GET.get('search', '').strip()
+    supplier = request.GET.get('supplier', '').strip()
+    status = request.GET.get('status', '').strip()
+
+    if search:
+        invoices = invoices.filter(invoice_number__icontains=search)
+
+    if supplier:
+        invoices = invoices.filter(supplier_name__icontains=supplier)
+
+    if status:
+        invoices = invoices.filter(status=status)
+
+    return render(request, 'core/invoice_list.html', {
+        'invoices': invoices,
+        'search': search,
+        'supplier': supplier,
+        'status': status,
+    })
 
 
 @login_required
@@ -66,7 +85,21 @@ def invoice_item_add(request, invoice_id):
 @login_required
 def delivery_list(request):
     deliveries = DeliveryNote.objects.all().order_by('-created_at')
-    return render(request, 'core/delivery_list.html', {'deliveries': deliveries})
+
+    search = request.GET.get('search', '').strip()
+    supplier = request.GET.get('supplier', '').strip()
+
+    if search:
+        deliveries = deliveries.filter(delivery_number__icontains=search)
+
+    if supplier:
+        deliveries = deliveries.filter(supplier_name__icontains=supplier)
+
+    return render(request, 'core/delivery_list.html', {
+        'deliveries': deliveries,
+        'search': search,
+        'supplier': supplier,
+    })
 
 
 @login_required
@@ -151,7 +184,15 @@ def compare_documents(request):
 @login_required
 def stock_list(request):
     stock_items = StockItem.objects.all().order_by('item_name')
-    return render(request, 'core/stock_list.html', {'stock_items': stock_items})
+
+    search = request.GET.get('search', '').strip()
+    if search:
+        stock_items = stock_items.filter(item_name__icontains=search)
+
+    return render(request, 'core/stock_list.html', {
+        'stock_items': stock_items,
+        'search': search,
+    })
 
 
 @login_required

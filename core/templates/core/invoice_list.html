@@ -2,6 +2,29 @@
 
 {% block content %}
 <h2>Invoices</h2>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-3">
+        <input type="text" name="search" value="{{ search }}" class="form-control" placeholder="Invoice number">
+    </div>
+    <div class="col-md-3">
+        <input type="text" name="supplier" value="{{ supplier }}" class="form-control" placeholder="Supplier">
+    </div>
+    <div class="col-md-3">
+        <select name="status" class="form-select">
+            <option value="">All statuses</option>
+            <option value="open" {% if status == 'open' %}selected{% endif %}>Open</option>
+            <option value="partial" {% if status == 'partial' %}selected{% endif %}>Partial</option>
+            <option value="complete" {% if status == 'complete' %}selected{% endif %}>Complete</option>
+            <option value="difference" {% if status == 'difference' %}selected{% endif %}>Difference</option>
+        </select>
+    </div>
+    <div class="col-md-3 d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <a href="/invoices/" class="btn btn-secondary">Reset</a>
+    </div>
+</form>
+
 <a class="btn btn-primary mb-3" href="/invoices/create/">Create Invoice</a>
 
 <table class="table table-bordered">
@@ -33,6 +56,10 @@
             <a class="btn btn-sm btn-outline-secondary" href="/invoices/{{ invoice.id }}/edit/">Edit</a>
             <a class="btn btn-sm btn-outline-danger" href="/invoices/{{ invoice.id }}/delete/">Delete</a>
         </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="7" class="text-muted">No invoices found</td>
     </tr>
     {% endfor %}
 </table>

@@ -3,6 +3,16 @@
 {% block content %}
 <h2>Stock</h2>
 
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-6">
+        <input type="text" name="search" value="{{ search }}" class="form-control" placeholder="Item name">
+    </div>
+    <div class="col-md-6 d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <a href="/stock/" class="btn btn-secondary">Reset</a>
+    </div>
+</form>
+
 <div class="mb-3 d-flex gap-2">
     <a class="btn btn-primary" href="/stock/movement/add/">Add Stock Movement</a>
     <a class="btn btn-outline-secondary" href="/stock/movements/">View Stock Movements</a>
@@ -19,6 +29,10 @@
         <td>{{ item.item_name }}</td>
         <td>{{ item.current_quantity }}</td>
         <td>{{ item.updated_at }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="3" class="text-muted">No stock items found</td>
     </tr>
     {% endfor %}
 </table>
