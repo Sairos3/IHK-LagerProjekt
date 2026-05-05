@@ -3,11 +3,27 @@
 {% block content %}
 <h2>Invoice {{ invoice.invoice_number }}</h2>
 
-<div class="card p-3 mb-3">
-    <p><strong>Supplier:</strong> {{ invoice.supplier_name }}</p>
-    <p><strong>Date:</strong> {{ invoice.invoice_date }}</p>
-    <p><strong>Status:</strong> {{ invoice.get_status_display }}</p>
-    <p><strong>Created at:</strong> {{ invoice.created_at }}</p>
+<div class="card p-3 mb-3 shadow-sm">
+    <div class="row">
+        <div class="col-md-6">
+            <p><strong>Supplier:</strong> {{ invoice.supplier_name }}</p>
+            <p><strong>Date:</strong> {{ invoice.invoice_date }}</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+            <p>
+                <strong>Status:</strong>
+                <span class="badge
+                    {% if invoice.status == 'complete' %}bg-success
+                    {% elif invoice.status == 'partial' %}bg-warning text-dark
+                    {% elif invoice.status == 'difference' %}bg-danger
+                    {% else %}bg-secondary
+                    {% endif %}">
+                    {{ invoice.get_status_display }}
+                </span>
+            </p>
+            <p><strong>Created:</strong> {{ invoice.created_at|date:"d.m.Y H:i" }}</p>
+        </div>
+    </div>
 </div>
 
 <div class="mb-3 d-flex gap-2">

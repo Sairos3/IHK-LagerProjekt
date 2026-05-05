@@ -431,3 +431,50 @@ def dashboard(request):
     })
 
 
+@login_required
+def stock_movement_edit(request, movement_id):
+    movement = get_object_or_404(StockMovement, id=movement_id)
+
+    if request.method == 'POST':
+        form = StockMovementForm(request.POST, instance=movement)
+        if form.is_valid():
+            old_quantity = movement.quantity_change
+
+            updated = form.save(commit=False)
+            updated.created_by = movement.created_by
+            updated.save()
+
+            # adjust stock difference
+            stock_item = updated.stock_item
+            stock_item.current_quantity += (updated.quantity_change - old_quantity)
+            stock_item.save()
+
+            return redirect('stock_movement_list')
+    else:
+        form = StockMovementForm(instance=movement)
+
+    return render(request, 'core/form.html', {
+        'form': form,
+        'title': f'Edit Stock Movement'
+    })
+
+
+@login_required
+def stock_movement_delete(request, movement_id):
+    movement = get_object_or_404(StockMovement, id=movement_id)
+
+    if request.method == 'POST':
+        stock_item = movement.stock_item
+
+        # reverse the movement
+        stock_item.current_quantity -= movement.quantity_change
+        stock_item.save()
+
+        movement.delete()
+        return redirect('stock_movement_list')
+
+    return render(request, 'core/confirm_delete.html', {
+        'title': 'Delete Stock Movement',
+        'message': f'Are you sure you want to delete movement for "{movement.stock_item.item_name}"?'
+    })
+

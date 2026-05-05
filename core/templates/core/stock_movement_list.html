@@ -4,30 +4,34 @@
 <h2>Stock Movements</h2>
 
 <div class="mb-3">
-    <a class="btn btn-primary" href="/stock/movement/add/">Add Stock Movement</a>
+    <a class="btn btn-primary" href="/stock/movement/add/">Add Movement</a>
+    <a class="btn btn-secondary" href="/stock/">Back to Stock</a>
 </div>
 
 <table class="table table-bordered">
     <tr>
-        <th>Date</th>
         <th>Item</th>
         <th>Type</th>
         <th>Change</th>
         <th>Reason</th>
-        <th>User</th>
+        <th>Date</th>
+        <th>Action</th>
     </tr>
     {% for movement in movements %}
     <tr>
-        <td>{{ movement.created_at }}</td>
         <td>{{ movement.stock_item.item_name }}</td>
         <td>{{ movement.get_movement_type_display }}</td>
         <td>{{ movement.quantity_change }}</td>
         <td>{{ movement.reason }}</td>
-        <td>{{ movement.created_by }}</td>
+        <td>{{ movement.created_at }}</td>
+        <td>
+            <a class="btn btn-sm btn-outline-secondary" href="/stock/movement/{{ movement.id }}/edit/">Edit</a>
+            <a class="btn btn-sm btn-outline-danger" href="/stock/movement/{{ movement.id }}/delete/">Delete</a>
+        </td>
     </tr>
     {% empty %}
     <tr>
-        <td colspan="6" class="text-muted">No stock movements available</td>
+        <td colspan="6" class="text-muted">No movements available</td>
     </tr>
     {% endfor %}
 </table>

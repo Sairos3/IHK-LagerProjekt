@@ -41,16 +41,32 @@
     <tr>
         <td>{{ invoice.invoice_number }}</td>
         <td>{{ invoice.supplier_name }}</td>
-        <td>{{ invoice.invoice_date }}</td>
-        <td>{{ invoice.get_status_display }}</td>
+        <td>{{ invoice.invoice_date|date:"d.m.Y" }}</td>
+        <td>
+            <span class="badge
+                {% if invoice.status == 'complete' %}bg-success
+                {% elif invoice.status == 'partial' %}bg-warning text-dark
+                {% elif invoice.status == 'difference' %}bg-danger
+                {% else %}bg-secondary
+                {% endif %}">
+                {{ invoice.get_status_display }}
+            </span>
+        </td>
         <td>
             {% for item in invoice.items.all %}
-                <div>{{ item.item_name }} - {{ item.quantity }} {{ item.unit }}</div>
+                <div>
+                    {{ item.item_name }}
+                    <span class="text-muted">({{ item.quantity }} {{ item.unit }})</span>
+                </div>
             {% empty %}
                 <span class="text-muted">No items</span>
             {% endfor %}
         </td>
-        <td>{{ invoice.delivery_notes.count }}</td>
+        <td>
+            <span class="badge bg-info text-dark">
+                {{ invoice.delivery_notes.count }}
+            </span>
+        </td>
         <td>
             <a class="btn btn-sm btn-outline-primary" href="/invoices/{{ invoice.id }}/">Open</a>
             <a class="btn btn-sm btn-outline-secondary" href="/invoices/{{ invoice.id }}/edit/">Edit</a>

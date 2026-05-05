@@ -30,4 +30,6 @@ urlpatterns = [
     path('stock/apply/', views.apply_stock_from_deliveries, name='apply_stock_from_deliveries'),
     path('stock/movements/', views.stock_movement_list, name='stock_movement_list'),
     path('stock/movement/add/', views.stock_movement_create, name='stock_movement_create'),
+    path('stock/movement/<int:movement_id>/edit/', views.stock_movement_edit, name='stock_movement_edit'),
+    path('stock/movement/<int:movement_id>/delete/', views.stock_movement_delete, name='stock_movement_delete'),
 ]
