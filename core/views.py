@@ -150,11 +150,16 @@ def compare_documents(request):
 
         invoice_status = 'complete' if invoice.items.exists() else 'open'
         item_results = []
+        total_expected = 0
+        total_delivered = 0
 
         for invoice_item in invoice.items.all():
             key = invoice_item.item_name.strip().lower()
             delivered_qty = delivered_map.get(key, 0)
             difference = delivered_qty - invoice_item.quantity
+
+            total_expected += invoice_item.quantity
+            total_delivered += delivered_qty
 
             if delivered_qty == 0:
                 status = 'Open'
@@ -185,6 +190,9 @@ def compare_documents(request):
             'invoice': invoice,
             'deliveries': linked_deliveries,
             'items': item_results,
+            'total_expected': total_expected,
+            'total_delivered': total_delivered,
+            'total_difference': total_delivered - total_expected,
         })
 
     return render(request, 'core/compare.html', {'grouped_results': grouped_results})
@@ -401,6 +409,25 @@ def delivery_delete(request, delivery_id):
     return render(request, 'core/confirm_delete.html', {
         'title': 'Delete Delivery Note',
         'message': f'Are you sure you want to delete delivery note "{delivery.delivery_number}"? All linked delivery items will also be deleted.'
+    })
+
+
+@login_required
+def dashboard(request):
+    recent_invoices = Invoice.objects.order_by('-created_at')[:5]
+    recent_deliveries = DeliveryNote.objects.order_by('-created_at')[:5]
+    recent_movements = StockMovement.objects.select_related('stock_item').order_by('-created_at')[:5]
+
+    return render(request, 'core/dashboard.html', {
+        'invoices': Invoice.objects.count(),
+        'deliveries': DeliveryNote.objects.count(),
+        'stock_items': StockItem.objects.count(),
+        'open_invoices': Invoice.objects.filter(status='open').count(),
+        'partial_invoices': Invoice.objects.filter(status='partial').count(),
+        'complete_invoices': Invoice.objects.filter(status='complete').count(),
+        'recent_invoices': recent_invoices,
+        'recent_deliveries': recent_deliveries,
+        'recent_movements': recent_movements,
     })
 
 
