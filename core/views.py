@@ -1,4 +1,9 @@
+from django.http import HttpResponse
 from collections import defaultdict
+
+from openpyxl.styles import Font
+from openpyxl import Workbook
+from openpyxl.utils import get_column_letter
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
@@ -477,4 +482,106 @@ def stock_movement_delete(request, movement_id):
         'title': 'Delete Stock Movement',
         'message': f'Are you sure you want to delete movement for "{movement.stock_item.item_name}"?'
     })
+
+
+@login_required
+def export_invoices(request):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Invoices"
+
+    headers = [
+        "Invoice Number",
+        "Supplier",
+        "Invoice Date",
+        "Status",
+        "Items",
+        "Delivery Count",
+    ]
+
+    ws.append(headers)
+
+    for cell in ws[1]:
+        cell.font = Font(bold=True)
+
+    invoices = Invoice.objects.prefetch_related("items", "delivery_notes").all()
+
+    for invoice in invoices:
+        items = ", ".join([
+            f"{item.item_name} ({item.quantity} {item.unit})"
+            for item in invoice.items.all()
+        ])
+
+        ws.append([
+            invoice.invoice_number,
+            invoice.supplier_name,
+            invoice.invoice_date.strftime("%d.%m.%Y"),
+            invoice.get_status_display(),
+            items,
+            invoice.delivery_notes.count(),
+        ])
+
+    for column in ws.columns:
+        max_length = 0
+        column_letter = get_column_letter(column[0].column)
+
+        for cell in column:
+            if cell.value:
+                max_length = max(max_length, len(str(cell.value)))
+
+        ws.column_dimensions[column_letter].width = max_length + 2
+
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response["Content-Disposition"] = 'attachment; filename="invoices.xlsx"'
+
+    wb.save(response)
+    return response
+
+
+@login_required
+def export_stock(request):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Stock"
+
+    headers = [
+        "Item",
+        "Current Quantity",
+        "Updated At",
+    ]
+
+    ws.append(headers)
+
+    for cell in ws[1]:
+        cell.font = Font(bold=True)
+
+    stock_items = StockItem.objects.all().order_by("item_name")
+
+    for item in stock_items:
+        ws.append([
+            item.item_name,
+            item.current_quantity,
+            item.updated_at.strftime("%d.%m.%Y %H:%M"),
+        ])
+
+    for column in ws.columns:
+        max_length = 0
+        column_letter = get_column_letter(column[0].column)
+
+        for cell in column:
+            if cell.value:
+                max_length = max(max_length, len(str(cell.value)))
+
+        ws.column_dimensions[column_letter].width = max_length + 2
+
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response["Content-Disposition"] = 'attachment; filename="stock.xlsx"'
+
+    wb.save(response)
+    return response
+
 

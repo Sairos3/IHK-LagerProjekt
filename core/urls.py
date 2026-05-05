@@ -32,4 +32,7 @@ urlpatterns = [
     path('stock/movement/add/', views.stock_movement_create, name='stock_movement_create'),
     path('stock/movement/<int:movement_id>/edit/', views.stock_movement_edit, name='stock_movement_edit'),
     path('stock/movement/<int:movement_id>/delete/', views.stock_movement_delete, name='stock_movement_delete'),
-]
+
+    path('export/invoices/', views.export_invoices, name='export_invoices_excel'),
+    path('export/stock/', views.export_stock, name='export_stock_excel'),
+    ]
