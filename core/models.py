@@ -83,10 +83,9 @@ class StockItem(models.Model):
 
 class StockMovement(models.Model):
     MOVEMENT_TYPES = [
-        ('goods_receipt', 'Goods Receipt'),
-        ('correction', 'Correction'),
-        ('damage', 'Damage'),
-        ('return', 'Return'),
+        ('correction', 'Korrektur/Endern'),
+        ('damage', 'Schaden'),
+        ('return', 'Retour'),
     ]
 
     stock_item = models.ForeignKey(StockItem, on_delete=models.CASCADE, related_name='movements')

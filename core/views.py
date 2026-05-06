@@ -260,7 +260,7 @@ def stock_movement_create(request):
             return redirect('stock_list')
     else:
         form = StockMovementForm()
-    return render(request, 'core/form.html', {'form': form, 'title': 'Create Stock Movement'})
+    return render(request, 'core/form.html', {'form': form, 'title': 'Lagerbestand bearbeiten'})
 
 
 @login_required
@@ -494,7 +494,7 @@ def export_invoices(request):
         "Rechnungs Nr.",
         "Lieferant",
         "Rechnungsdatum",
-        "Stand",
+        "Status",
         "Artikel",
         "Lieferanzahl",
     ]

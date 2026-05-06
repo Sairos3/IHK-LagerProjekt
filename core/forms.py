@@ -109,26 +109,32 @@ class StockMovementForm(forms.ModelForm):
     class Meta:
         model = StockMovement
         fields = ['stock_item', 'movement_type', 'quantity_change', 'reason']
+        labels = {
+            'stock_item': 'Artikel',
+            'movement_type': 'Grund',
+            'quantity_change': 'Menge',
+            'reason': 'Beschreibung',
+        }
         widgets = {
             'stock_item': forms.Select(attrs={'class': 'form-select'}),
             'movement_type': forms.Select(attrs={'class': 'form-select'}),
             'quantity_change': forms.NumberInput(attrs={'class': 'form-control'}),
-            'reason': forms.TextInput(attrs={'class': 'form-control'}),
+            'reason': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Beschreibe den Grund der Eintragung'
+                }),
         }
 
     def clean_quantity_change(self):
         quantity_change = self.cleaned_data['quantity_change']
         if quantity_change == 0:
-            raise forms.ValidationError('Quantity change cannot be 0.')
+            raise forms.ValidationError('Menge kann nicht 0 sein.')
         return quantity_change
 
     def clean(self):
         cleaned_data = super().clean()
         movement_type = cleaned_data.get('movement_type')
         quantity_change = cleaned_data.get('quantity_change')
-
-        if movement_type == 'goods_receipt' and quantity_change is not None and quantity_change < 0:
-            raise forms.ValidationError('Goods receipt should be a positive quantity.')
 
         if movement_type in ['damage', 'return'] and quantity_change is not None and quantity_change > 0:
             raise forms.ValidationError('Damage and return should usually reduce stock, so use a negative value.')
