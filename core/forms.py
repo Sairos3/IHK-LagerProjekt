@@ -62,6 +62,14 @@ class DeliveryNoteForm(forms.ModelForm):
             'delivery_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'file': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['invoice'].queryset = Invoice.objects.filter(
+            delivery_notes__isnull=True
+
+    )
 
     def clean(self):
         cleaned_data = super().clean()
