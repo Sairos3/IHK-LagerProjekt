@@ -66,7 +66,7 @@ def invoice_create(request):
             return redirect('invoice_list')
     else:
         form = InvoiceForm()
-    return render(request, 'core/form.html', {'form': form, 'title': 'Create Invoice'})
+    return render(request, 'core/form.html', {'form': form, 'title': 'Rechnung erstellen'})
 
 
 @login_required
@@ -83,7 +83,7 @@ def invoice_item_add(request, invoice_id):
         form = InvoiceItemForm()
     return render(request, 'core/form.html', {
         'form': form,
-        'title': f'Add Item to Invoice {invoice.invoice_number}'
+        'title': f'Artikel zur Rechnung hinzufügen {invoice.invoice_number}'
     })
 
 
@@ -118,7 +118,7 @@ def delivery_create(request):
             return redirect('delivery_list')
     else:
         form = DeliveryNoteForm()
-    return render(request, 'core/form.html', {'form': form, 'title': 'Create Delivery Note'})
+    return render(request, 'core/form.html', {'form': form, 'title': 'Lieferschein erstellen'})
 
 
 @login_required
@@ -135,7 +135,7 @@ def delivery_item_add(request, delivery_id):
         form = DeliveryItemForm()
     return render(request, 'core/form.html', {
         'form': form,
-        'title': f'Add Item to Delivery {delivery.delivery_number}'
+        'title': f'Artikel zur Lieferung hinzufügen {delivery.delivery_number}'
     })
 
 
@@ -167,17 +167,17 @@ def compare_documents(request):
             total_delivered += delivered_qty
 
             if delivered_qty == 0:
-                status = 'Open'
+                status = 'Offen'
                 invoice_status = 'open'
             elif delivered_qty < invoice_item.quantity:
-                status = 'Partial'
+                status = 'Teilweise'
                 invoice_status = 'partial'
             elif delivered_qty == invoice_item.quantity:
-                status = 'Complete'
+                status = 'Vollständig'
                 if invoice_status not in ['open', 'partial', 'difference']:
                     invoice_status = 'complete'
             else:
-                status = 'Difference'
+                status = 'Differenz'
                 invoice_status = 'difference'
 
             item_results.append({
@@ -300,7 +300,7 @@ def invoice_item_edit(request, item_id):
 
     return render(request, 'core/form.html', {
         'form': form,
-        'title': f'Edit Invoice Item: {item.item_name}'
+        'title': f'Rechnungsposition bearbeiten: {item.item_name}'
     })
 
 
@@ -314,8 +314,8 @@ def invoice_item_delete(request, item_id):
         return redirect('invoice_detail', invoice_id=invoice_id)
 
     return render(request, 'core/confirm_delete.html', {
-        'title': 'Delete Invoice Item',
-        'message': f'Are you sure you want to delete "{item.item_name}" from invoice {item.invoice.invoice_number}?'
+        'title': 'Rechnungsartikel löschen',
+        'message': f'Sind Sie sicher, dass Sie "{item.item_name}" aus der {item.invoice.invoice_number} löschen möchten?'
     })
 
 
@@ -332,7 +332,7 @@ def delivery_item_edit(request, item_id):
 
     return render(request, 'core/form.html', {
         'form': form,
-        'title': f'Edit Delivery Item: {item.item_name}'
+        'title': f'Lieferartikel bearbeiten: {item.item_name}'
     })
 
 
@@ -346,8 +346,8 @@ def delivery_item_delete(request, item_id):
         return redirect('delivery_detail', delivery_id=delivery_id)
 
     return render(request, 'core/confirm_delete.html', {
-        'title': 'Delete Delivery Item',
-        'message': f'Are you sure you want to delete "{item.item_name}" from delivery {item.delivery_note.delivery_number}?'
+        'title': 'Lieferartikel löschen',
+        'message': f'Möchten Sie diese Sendung wirklich entfernen "{item.item_name}" aus der Zustellung {item.delivery_note.delivery_number}?'
     })
 
 
@@ -366,7 +366,7 @@ def invoice_edit(request, invoice_id):
 
     return render(request, 'core/form.html', {
         'form': form,
-        'title': f'Edit Invoice {invoice.invoice_number}'
+        'title': f'Rechnung bearbeiten {invoice.invoice_number}'
     })
 
 
@@ -379,8 +379,8 @@ def invoice_delete(request, invoice_id):
         return redirect('invoice_list')
 
     return render(request, 'core/confirm_delete.html', {
-        'title': 'Delete Invoice',
-        'message': f'Are you sure you want to delete invoice "{invoice.invoice_number}"? All linked invoice items and delivery notes will also be deleted.'
+        'title': 'Rechnung löschen',
+        'message': f'Sind Sie sicher, dass Sie die Rechnung löschen möchten "{invoice.invoice_number}"? Alle verknüpften Rechnungspositionen und Lieferscheine werden ebenfalls gelöscht.'
     })
 
 
@@ -399,7 +399,7 @@ def delivery_edit(request, delivery_id):
 
     return render(request, 'core/form.html', {
         'form': form,
-        'title': f'Edit Delivery Note {delivery.delivery_number}'
+        'title': f'Lieferschein bearbeiten {delivery.delivery_number}'
     })
 
 
@@ -412,8 +412,8 @@ def delivery_delete(request, delivery_id):
         return redirect('delivery_list')
 
     return render(request, 'core/confirm_delete.html', {
-        'title': 'Delete Delivery Note',
-        'message': f'Are you sure you want to delete delivery note "{delivery.delivery_number}"? All linked delivery items will also be deleted.'
+        'title': 'Lieferschein löschen',
+        'message': f'Sind Sie sicher, dass Sie den Lieferschein löschen möchten "{delivery.delivery_number}"? Alle damit verknüpften Lieferartikel werden ebenfalls gelöscht.'
     })
 
 
@@ -460,7 +460,7 @@ def stock_movement_edit(request, movement_id):
 
     return render(request, 'core/form.html', {
         'form': form,
-        'title': f'Edit Stock Movement'
+        'title': f'Lagerbestand bearbeiten'
     })
 
 
@@ -479,8 +479,8 @@ def stock_movement_delete(request, movement_id):
         return redirect('stock_movement_list')
 
     return render(request, 'core/confirm_delete.html', {
-        'title': 'Delete Stock Movement',
-        'message': f'Are you sure you want to delete movement for "{movement.stock_item.item_name}"?'
+        'title': 'Lagerbestandsbewegung Löschen',
+        'message': f'Möchten Sie die Bewegung wirklich löschen? "{movement.stock_item.item_name}"?'
     })
 
 
@@ -491,12 +491,12 @@ def export_invoices(request):
     ws.title = "Invoices"
 
     headers = [
-        "Invoice Number",
-        "Supplier",
-        "Invoice Date",
-        "Status",
-        "Items",
-        "Delivery Count",
+        "Rechnungs Nr.",
+        "Lieferant",
+        "Rechnungsdatum",
+        "Stand",
+        "Artikel",
+        "Lieferanzahl",
     ]
 
     ws.append(headers)
@@ -544,12 +544,12 @@ def export_invoices(request):
 def export_stock(request):
     wb = Workbook()
     ws = wb.active
-    ws.title = "Stock"
+    ws.title = "Lager"
 
     headers = [
-        "Item",
-        "Current Quantity",
-        "Updated At",
+        "Artikel",
+        "Aktuelle Menge",
+        "Aktualisiert am",
     ]
 
     ws.append(headers)

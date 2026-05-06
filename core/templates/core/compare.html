@@ -1,21 +1,21 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-<h2>Comparison Results</h2>
+<h2>Vergleichsergebnisse</h2>
 
 <div class="mb-3 d-flex gap-2">
-    <a class="btn btn-success" href="/stock/apply/">Apply Stock from Deliveries</a>
-    <a class="btn btn-outline-secondary" href="/invoices/">View Invoices</a>
+    <a class="btn btn-success" href="/stock/apply/">Lagerbestand aus Lieferungen verwenden</a>
+    <a class="btn btn-outline-secondary" href="/invoices/">Rechnungen anzeigen</a>
 </div>
 
 {% for group in grouped_results %}
 <div class="card mb-4 shadow-sm">
     <div class="card-header d-flex justify-content-between align-items-center">
         <div>
-            <strong>Invoice:</strong>
+            <strong>Rechnung:</strong>
             <a href="/invoices/{{ group.invoice.id }}/">{{ group.invoice.invoice_number }}</a><br>
-            <strong>Supplier:</strong> {{ group.invoice.supplier_name }}<br>
-            <strong>Date:</strong> {{ group.invoice.invoice_date }}
+            <strong>Lieferant:</strong> {{ group.invoice.supplier_name }}<br>
+            <strong>Datum:</strong> {{ group.invoice.invoice_date }}
         </div>
         <div>
             <span class="badge
@@ -33,37 +33,37 @@
         <div class="row mb-3">
             <div class="col-md-4">
                 <div class="border rounded p-2">
-                    <strong>Total expected:</strong> {{ group.total_expected }}
+                    <strong>Gesamt erwartet:</strong> {{ group.total_expected }}
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="border rounded p-2">
-                    <strong>Total delivered:</strong> {{ group.total_delivered }}
+                    <strong>Insgesamt geliefert:</strong> {{ group.total_delivered }}
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="border rounded p-2">
-                    <strong>Total difference:</strong> {{ group.total_difference }}
+                    <strong>Differenz:</strong> {{ group.total_difference }}
                 </div>
             </div>
         </div>
 
         <p>
-            <strong>Linked Delivery Notes:</strong>
+            <strong>Verknüpfte Lieferscheine:</strong>
             {% for delivery in group.deliveries %}
                 <a href="/deliveries/{{ delivery.id }}/">{{ delivery.delivery_number }}</a>{% if not forloop.last %}, {% endif %}
             {% empty %}
-                <span class="text-muted">No linked delivery notes</span>
+                <span class="text-muted">Keine verknüpften Lieferscheine</span>
             {% endfor %}
         </p>
 
         <table class="table table-bordered align-middle">
             <tr>
-                <th>Item</th>
-                <th>Expected</th>
-                <th>Delivered</th>
-                <th>Difference</th>
-                <th>Status</th>
+                <th>Artikel</th>
+                <th>Erwartet</th>
+                <th>Geliefert</th>
+                <th>Differenz</th>
+                <th>Stand</th>
             </tr>
             {% for item in group.items %}
             <tr>
@@ -81,9 +81,9 @@
                 </td>
                 <td>
                     <span class="badge
-                        {% if item.status == 'Complete' %}bg-success
-                        {% elif item.status == 'Partial' %}bg-warning text-dark
-                        {% elif item.status == 'Difference' %}bg-danger
+                        {% if item.status == 'Vollständig' %}bg-success
+                        {% elif item.status == 'Teilweise' %}bg-warning text-dark
+                        {% elif item.status == 'Differenz' %}bg-danger
                         {% else %}bg-secondary
                         {% endif %}">
                         {{ item.status }}
@@ -92,7 +92,7 @@
             </tr>
             {% empty %}
             <tr>
-                <td colspan="5" class="text-muted">No invoice items available</td>
+                <td colspan="5" class="text-muted">Keine Rechnungspositionen verfügbar</td>
             </tr>
             {% endfor %}
         </table>
@@ -100,7 +100,7 @@
 </div>
 {% empty %}
 <div class="alert alert-info">
-    No comparison data available.
+    Keine Vergleichsdaten verfügbar.
 </div>
 {% endfor %}
 {% endblock %}

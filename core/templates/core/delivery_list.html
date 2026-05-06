@@ -1,31 +1,31 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-<h2>Delivery Notes</h2>
+<h2>Lieferscheine</h2>
 
 <form method="get" class="row g-2 mb-3">
     <div class="col-md-4">
-        <input type="text" name="search" value="{{ search }}" class="form-control" placeholder="Delivery number">
+        <input type="text" name="search" value="{{ search }}" class="form-control" placeholder="Lieferscheinnummer">
     </div>
     <div class="col-md-4">
-        <input type="text" name="supplier" value="{{ supplier }}" class="form-control" placeholder="Supplier">
+        <input type="text" name="supplier" value="{{ supplier }}" class="form-control" placeholder="Lieferant">
     </div>
     <div class="col-md-4 d-flex gap-2">
         <button type="submit" class="btn btn-primary">Filter</button>
-        <a href="/deliveries/" class="btn btn-secondary">Reset</a>
+        <a href="/deliveries/" class="btn btn-secondary">Zurücksetzen</a>
     </div>
 </form>
 
-<a class="btn btn-primary mb-3" href="/deliveries/create/">Create Delivery Note</a>
+<a class="btn btn-primary mb-3" href="/deliveries/create/">Lieferschein erstellen</a>
 
 <table class="table table-bordered">
     <tr>
-        <th>Number</th>
-        <th>Invoice</th>
-        <th>Supplier</th>
-        <th>Date</th>
-        <th>Items</th>
-        <th>Action</th>
+        <th>Lieferschein Nr.</th>
+        <th>Rechnungs Nr.</th>
+        <th>Lieferant</th>
+        <th>Datum</th>
+        <th>Artikel</th>
+        <th>Aktion</th>
     </tr>
     {% for delivery in deliveries %}
     <tr>
@@ -34,7 +34,7 @@
             {% if delivery.invoice %}
                 {{ delivery.invoice.invoice_number }}
             {% else %}
-                <span class="text-muted">Not assigned</span>
+                <span class="text-muted">Nicht zugewiesen</span>
             {% endif %}
         </td>
         <td>{{ delivery.supplier_name }}</td>
@@ -43,18 +43,18 @@
             {% for item in delivery.items.all %}
                 <div>{{ item.item_name }} - {{ item.quantity }} {{ item.unit }}</div>
             {% empty %}
-                <span class="text-muted">No items</span>
+                <span class="text-muted">Keine Artikel</span>
             {% endfor %}
         </td>
         <td>
-            <a class="btn btn-sm btn-outline-primary" href="/deliveries/{{ delivery.id }}/">Open</a>
-            <a class="btn btn-sm btn-outline-secondary" href="/deliveries/{{ delivery.id }}/edit/">Edit</a>
-            <a class="btn btn-sm btn-outline-danger" href="/deliveries/{{ delivery.id }}/delete/">Delete</a>
+            <a class="btn btn-sm btn-outline-primary" href="/deliveries/{{ delivery.id }}/">Offen</a>
+            <a class="btn btn-sm btn-outline-secondary" href="/deliveries/{{ delivery.id }}/edit/">Bearbeiten</a>
+            <a class="btn btn-sm btn-outline-danger" href="/deliveries/{{ delivery.id }}/delete/">Löschen</a>
         </td>
     </tr>
     {% empty %}
     <tr>
-        <td colspan="6" class="text-muted">No delivery notes found</td>
+        <td colspan="6" class="text-muted">Keine Lieferscheine gefunden</td>
     </tr>
     {% endfor %}
 </table>

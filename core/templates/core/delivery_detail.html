@@ -1,34 +1,34 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-<h2>Delivery Note {{ delivery.delivery_number }}</h2>
+<h2>Lieferschein {{ delivery.delivery_number }}</h2>
 
 <div class="card p-3 mb-3">
-    <p><strong>Invoice:</strong>
+    <p><strong>Rechnung:</strong>
         {% if delivery.invoice %}
             <a href="/invoices/{{ delivery.invoice.id }}/">{{ delivery.invoice.invoice_number }}</a>
         {% else %}
-            <span class="text-muted">Not assigned</span>
+            <span class="text-muted">Nicht zugewiesen</span>
         {% endif %}
     </p>
-    <p><strong>Supplier:</strong> {{ delivery.supplier_name }}</p>
-    <p><strong>Date:</strong> {{ delivery.delivery_date }}</p>
-    <p><strong>Created at:</strong> {{ delivery.created_at }}</p>
+    <p><strong>Lieferant:</strong> {{ delivery.supplier_name }}</p>
+    <p><strong>Datum:</strong> {{ delivery.delivery_date }}</p>
+    <p><strong>Erstellt am:</strong> {{ delivery.created_at }}</p>
 </div>
 
 <div class="mb-3 d-flex gap-2">
-    <a class="btn btn-primary" href="/deliveries/{{ delivery.id }}/edit/">Edit Delivery</a>
-    <a class="btn btn-danger" href="/deliveries/{{ delivery.id }}/delete/">Delete Delivery</a>
-    <a class="btn btn-secondary" href="/deliveries/{{ delivery.id }}/add-item/">Add Item</a>
+    <a class="btn btn-primary" href="/deliveries/{{ delivery.id }}/edit/">Lieferung bearbeiten</a>
+    <a class="btn btn-danger" href="/deliveries/{{ delivery.id }}/delete/">Zustellung löschen</a>
+    <a class="btn btn-secondary" href="/deliveries/{{ delivery.id }}/add-item/">Artikel hinzufügen</a>
 </div>
 
-<h4>Delivery Items</h4>
+<h4>Liefergegenstände</h4>
 <table class="table table-bordered">
     <tr>
-        <th>Item</th>
-        <th>Quantity</th>
-        <th>Unit</th>
-        <th>Action</th>
+        <th>Artikel</th>
+        <th>Menge</th>
+        <th>Einheit</th>
+        <th>Aktion</th>
     </tr>
     {% for item in delivery.items.all %}
     <tr>
@@ -36,13 +36,13 @@
         <td>{{ item.quantity }}</td>
         <td>{{ item.unit }}</td>
         <td>
-            <a class="btn btn-sm btn-outline-primary" href="/delivery-items/{{ item.id }}/edit/">Edit</a>
-            <a class="btn btn-sm btn-outline-danger" href="/delivery-items/{{ item.id }}/delete/">Delete</a>
+            <a class="btn btn-sm btn-outline-primary" href="/delivery-items/{{ item.id }}/edit/">Bearbeiten</a>
+            <a class="btn btn-sm btn-outline-danger" href="/delivery-items/{{ item.id }}/delete/">Löschen</a>
         </td>
     </tr>
     {% empty %}
     <tr>
-        <td colspan="4" class="text-muted">No items available</td>
+        <td colspan="4" class="text-muted">Keine Artikel verfügbar</td>
     </tr>
     {% endfor %}
 </table>

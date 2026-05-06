@@ -53,7 +53,7 @@ class Migration(migrations.Migration):
                 ('supplier_name', models.CharField(max_length=255)),
                 ('invoice_date', models.DateField()),
                 ('file', models.FileField(blank=True, null=True, upload_to='invoices/')),
-                ('status', models.CharField(choices=[('open', 'Open'), ('partial', 'Partial'), ('complete', 'Complete'), ('difference', 'Difference')], default='open', max_length=20)),
+                ('status', models.CharField(choices=[('open', 'Offen'), ('partial', 'Teilweise'), ('complete', 'Vollständig'), ('difference', 'Differenz')], default='open', max_length=20)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
             ],

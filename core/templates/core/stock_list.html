@@ -1,29 +1,29 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-<h2>Stock</h2>
+<h2>Lager</h2>
 
 <form method="get" class="row g-2 mb-3">
     <div class="col-md-6">
-        <input type="text" name="search" value="{{ search }}" class="form-control" placeholder="Item name">
+        <input type="text" name="search" value="{{ search }}" class="form-control" placeholder="Artikel">
     </div>
     <div class="col-md-6 d-flex gap-2">
         <button type="submit" class="btn btn-primary">Filter</button>
-        <a href="/stock/" class="btn btn-secondary">Reset</a>
+        <a href="/stock/" class="btn btn-secondary">Zurücksetzen</a>
     </div>
 </form>
 
 <div class="mb-3 d-flex gap-2">
-    <a class="btn btn-primary" href="/stock/movement/add/">Add Stock Movement</a>
-    <a class="btn btn-outline-secondary" href="/stock/movements/">View Stock Movements</a>
-    <a class="btn btn-outline-success" href="/export/stock/">Export To Excel</a>
+    <a class="btn btn-primary" href="/stock/movement/add/">Lagerbestandsbewegung hinzufügen</a>
+    <a class="btn btn-outline-secondary" href="/stock/movements/">Lagerbewegungen anzeigen</a>
+    <a class="btn btn-outline-success" href="/export/stock/">Excel-Export</a>
 </div>
 
 <table class="table table-bordered">
     <tr>
-        <th>Item</th>
-        <th>Current Quantity</th>
-        <th>Updated At</th>
+        <th>Artikel</th>
+        <th>Aktuelle Menge</th>
+        <th>Aktualisiert am</th>
     </tr>
     {% for item in stock_items %}
     <tr>

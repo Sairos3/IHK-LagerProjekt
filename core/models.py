@@ -4,10 +4,10 @@ from django.db import models
 
 class Invoice(models.Model):
     STATUS_CHOICES = [
-        ('open', 'Open'),
-        ('partial', 'Partial'),
-        ('complete', 'Complete'),
-        ('difference', 'Difference'),
+        ('open', 'Offen'),
+        ('partial', 'Teilweise'),
+        ('complete', 'Vollständig'),
+        ('difference', 'Differenz'),
     ]
 
     invoice_number = models.CharField(max_length=100, unique=True)

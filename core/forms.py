@@ -6,6 +6,12 @@ class InvoiceForm(forms.ModelForm):
     class Meta:
         model = Invoice
         fields = ['invoice_number', 'supplier_name', 'invoice_date', 'file']
+        labels = {
+            'invoice_number': 'Rechnungs Nr.',
+            'supplier_name': 'Lieferantenname',
+            'invoice_date': 'Rechnungsdatum',
+            'file': 'Datei',
+        }
         widgets = {
             'invoice_number': forms.TextInput(attrs={'class': 'form-control'}),
             'supplier_name': forms.TextInput(attrs={'class': 'form-control'}),
@@ -42,6 +48,13 @@ class DeliveryNoteForm(forms.ModelForm):
     class Meta:
         model = DeliveryNote
         fields = ['invoice', 'delivery_number', 'supplier_name', 'delivery_date', 'file']
+        labels = {
+            'invoice': 'Rechnungs Nr.',
+            'delivery_number': 'Lieferschein Nr.',
+            'supplier_name': 'Lieferantenname',
+            'delivery_date': 'Rechnungsdatum',
+            'file': 'Datei',
+        }
         widgets = {
             'invoice': forms.Select(attrs={'class': 'form-select'}),
             'delivery_number': forms.TextInput(attrs={'class': 'form-control'}),
@@ -56,7 +69,7 @@ class DeliveryNoteForm(forms.ModelForm):
         supplier_name = cleaned_data.get('supplier_name')
 
         if invoice and supplier_name and invoice.supplier_name.strip().lower() != supplier_name.strip().lower():
-            raise forms.ValidationError('Supplier of delivery note must match supplier of selected invoice.')
+            raise forms.ValidationError('Der Lieferant des Lieferscheins muss mit dem Lieferanten der ausgewählten Rechnung übereinstimmen.')
 
         return cleaned_data
 
