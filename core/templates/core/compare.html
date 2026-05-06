@@ -81,8 +81,8 @@
                 </td>
                 <td>
                     <span class="badge
-                        {% if item.status == 'Vollständig' %}bg-success
-                        {% elif item.status == 'Teilweise' %}bg-warning text-dark
+                        {% if item.status == 'Abgeschlossen' %}bg-success
+                        {% elif item.status == 'In Bearbeitung' %}bg-warning text-dark
                         {% elif item.status == 'Differenz' %}bg-danger
                         {% else %}bg-secondary
                         {% endif %}">

@@ -21,7 +21,7 @@
                     {{ invoice.get_status_display }}
                 </span>
             </p>
-            <p><strong>Created:</strong> {{ invoice.created_at|date:"d.m.Y H:i" }}</p>
+            <p><strong>Erstellt am:</strong> {{ invoice.created_at|date:"d.m.Y H:i" }}</p>
         </div>
     </div>
 </div>
@@ -39,7 +39,7 @@
         <th>Quantity</th>
         <th>Unit</th>
         <th>Net Price</th>
-        <th>Aktion</th>
+        <th>Status</th>
     </tr>
     {% for item in invoice.items.all %}
     <tr>
@@ -59,13 +59,13 @@
     {% endfor %}
 </table>
 
-<h4>Linked Delivery Notes</h4>
+<h4>Lieferscheine</h4>
 <table class="table table-bordered">
     <tr>
-        <th>Delivery Number</th>
+        <th>Lieferschein Nr.</th>
         <th>Datum</th>
         <th>Lieferant</th>
-        <th>Aktion</th>
+        <th>Status</th>
     </tr>
     {% for delivery in invoice.delivery_notes.all %}
     <tr>

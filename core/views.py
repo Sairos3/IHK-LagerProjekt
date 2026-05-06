@@ -170,10 +170,10 @@ def compare_documents(request):
                 status = 'Offen'
                 invoice_status = 'open'
             elif delivered_qty < invoice_item.quantity:
-                status = 'Teilweise'
+                status = 'In Bearbeitung'
                 invoice_status = 'partial'
             elif delivered_qty == invoice_item.quantity:
-                status = 'Vollständig'
+                status = 'Abgeschlossen'
                 if invoice_status not in ['open', 'partial', 'difference']:
                     invoice_status = 'complete'
             else:
@@ -380,7 +380,7 @@ def invoice_delete(request, invoice_id):
 
     return render(request, 'core/confirm_delete.html', {
         'title': 'Rechnung löschen',
-        'message': f'Sind Sie sicher, dass Sie die Rechnung löschen möchten "{invoice.invoice_number}"? Alle verknüpften Rechnungspositionen und Lieferscheine werden ebenfalls gelöscht.'
+        'message': f'Sind Sie sicher, dass Sie die Rechnung <span class="text-danger fw-bold fs-6">"{invoice.invoice_number}"</span> löschen möchten? Alle verknüpften Rechnungspositionen und Lieferscheine werden ebenfalls gelöscht.'
     })
 
 
@@ -413,7 +413,7 @@ def delivery_delete(request, delivery_id):
 
     return render(request, 'core/confirm_delete.html', {
         'title': 'Lieferschein löschen',
-        'message': f'Sind Sie sicher, dass Sie den Lieferschein löschen möchten "{delivery.delivery_number}"? Alle damit verknüpften Lieferartikel werden ebenfalls gelöscht.'
+        'message': f'Sind Sie sicher, dass Sie den Lieferschein <span class="text-danger fw-bold fs-6">"{delivery.delivery_number}"</span> löschen möchten?'
     })
 
 
@@ -479,7 +479,7 @@ def stock_movement_delete(request, movement_id):
         return redirect('stock_movement_list')
 
     return render(request, 'core/confirm_delete.html', {
-        'title': 'Lagerbestandsbewegung Löschen',
+        'title': 'Lagerabweichung Löschen',
         'message': f'Möchten Sie die Bewegung wirklich löschen? "{movement.stock_item.item_name}"?'
     })
 

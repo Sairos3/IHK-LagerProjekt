@@ -5,8 +5,8 @@ from django.db import models
 class Invoice(models.Model):
     STATUS_CHOICES = [
         ('open', 'Offen'),
-        ('partial', 'Teilweise'),
-        ('complete', 'Vollständig'),
+        ('partial', 'In Bearbeitung'),
+        ('complete', 'Abgeschlossen'),
         ('difference', 'Differenz'),
     ]
 

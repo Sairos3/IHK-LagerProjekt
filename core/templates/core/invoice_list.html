@@ -12,11 +12,10 @@
     </div>
     <div class="col-md-3">
         <select name="status" class="form-select">
-            <option value="">Alle Status</option>
+            <option value="">Status</option>
             <option value="open" {% if status == 'open' %}selected{% endif %}>Offen</option>
-            <option value="partial" {% if status == 'partial' %}selected{% endif %}>Teilweise</option>
-            <option value="complete" {% if status == 'complete' %}selected{% endif %}>Vollständig</option>
-            <option value="difference" {% if status == 'difference' %}selected{% endif %}>Differenz</option>
+            <option value="partial" {% if status == 'partial' %}selected{% endif %}>In Bearbeitung</option>
+            <option value="complete" {% if status == 'complete' %}selected{% endif %}>Abgeschlossen</option>
         </select>
     </div>
     <div class="col-md-3 d-flex gap-2">
@@ -38,7 +37,7 @@
         <th>Status</th>
         <th>Artikel</th>
         <th>Lieferungen</th>
-        <th>Aktion</th>
+        <th>Status</th>
     </tr>
     {% for invoice in invoices %}
     <tr>

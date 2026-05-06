@@ -86,6 +86,12 @@ class DeliveryItemForm(forms.ModelForm):
     class Meta:
         model = DeliveryItem
         fields = ['item_name', 'quantity', 'unit']
+        labels = {
+            'item_name': 'Artikel',
+            'quantity': 'Menge',
+            'unit': 'Einheit',
+        }
+        
         widgets = {
             'item_name': forms.TextInput(attrs={'class': 'form-control'}),
             'quantity': forms.NumberInput(attrs={'class': 'form-control'}),
