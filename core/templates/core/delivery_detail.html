@@ -57,13 +57,23 @@
             <strong>„Datei öffnen“</strong>.
         </div>
     {% else %}
-        <img src="{{ delivery.file.url }}" class="img-fluid border rounded" alt="Originaldatei">
+        <img src="{{ delivery.file.url }}"
+             class="img-fluid border rounded"
+             alt="Originaldatei">
     {% endif %}
 
     <p class="mt-2">
-        <a href="{{ delivery.file.url }}" target="_blank" class="btn btn-outline-primary">
+        <a href="{{ delivery.file.url }}"
+           target="_blank"
+           class="btn btn-outline-primary">
             Datei öffnen
         </a>
     </p>
+
+{% else %}
+    <hr>
+    <div class="alert alert-secondary">
+        Keine Datei hochgeladen.
+    </div>
 {% endif %}
 {% endblock %}

@@ -87,19 +87,29 @@
     <hr>
     <h4>Originaldatei</h4>
 
-    {% if delivery.file.url|lower|slice:"-4:" == ".pdf" %}
+    {% if invoice.file.url|lower|slice:"-4:" == ".pdf" %}
         <div class="alert alert-info">
             PDF-Vorschau nicht verfügbar. Bitte benutzen Sie den Button
             <strong>„Datei öffnen“</strong>.
         </div>
     {% else %}
-        <img src="{{ invoice.file.url }}" class="img-fluid border rounded" alt="Originaldatei">
+        <img src="{{ invoice.file.url }}"
+             class="img-fluid border rounded"
+             alt="Originaldatei">
     {% endif %}
 
     <p class="mt-2">
-        <a href="{{ invoice.file.url }}" target="_blank" class="btn btn-outline-primary">
+        <a href="{{ invoice.file.url }}"
+           target="_blank"
+           class="btn btn-outline-primary">
             Datei öffnen
         </a>
     </p>
+
+{% else %}
+    <hr>
+    <div class="alert alert-secondary">
+        Keine Datei hochgeladen.
+    </div>
 {% endif %}
 {% endblock %}
