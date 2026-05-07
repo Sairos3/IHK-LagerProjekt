@@ -46,4 +46,24 @@
     </tr>
     {% endfor %}
 </table>
+
+{% if delivery.file %}
+    <hr>
+    <h4>Originaldatei</h4>
+
+    {% if delivery.file.url|lower|slice:"-4:" == ".pdf" %}
+        <div class="alert alert-info">
+            PDF-Vorschau nicht verfügbar. Bitte benutzen Sie den Button
+            <strong>„Datei öffnen“</strong>.
+        </div>
+    {% else %}
+        <img src="{{ delivery.file.url }}" class="img-fluid border rounded" alt="Originaldatei">
+    {% endif %}
+
+    <p class="mt-2">
+        <a href="{{ delivery.file.url }}" target="_blank" class="btn btn-outline-primary">
+            Datei öffnen
+        </a>
+    </p>
+{% endif %}
 {% endblock %}

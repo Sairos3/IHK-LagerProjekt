@@ -88,7 +88,13 @@ class DeliveryNoteForm(forms.ModelForm):
 
         open_invoices = Invoice.objects.exclude(status='complete')
 
-        self.fields['invoice'].queryset = open_invoices
+        # include currently selected invoice while editing
+        if self.instance and self.instance.pk and self.instance.invoice:
+            open_invoices = open_invoices | Invoice.objects.filter(
+                pk=self.instance.invoice.pk
+            )
+
+        self.fields['invoice'].queryset = open_invoices.distinct()
 
         supplier_choices = [('', '---------')]
         supplier_choices += [
@@ -101,12 +107,21 @@ class DeliveryNoteForm(forms.ModelForm):
                 .order_by('supplier_name')
         ]
 
+        # include current supplier while editing
+        if self.instance and self.instance.pk and self.instance.supplier_name:
+            current_supplier = self.instance.supplier_name
+
+            if (current_supplier, current_supplier) not in supplier_choices:
+                supplier_choices.append(
+                    (current_supplier, current_supplier)
+                )
+
         self.fields['supplier_name'].widget = forms.Select(
             choices=supplier_choices,
             attrs={'class': 'form-select'}
         )
 
-        self.fields['delivery_date'].input_formats = ['%Y-%m-%d']   
+        self.fields['delivery_date'].input_formats = ['%Y-%m-%d']
 
 
 class DeliveryItemForm(forms.ModelForm):
