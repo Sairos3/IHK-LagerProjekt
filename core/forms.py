@@ -65,7 +65,7 @@ class DeliveryNoteForm(forms.ModelForm):
         widgets = {
             'invoice': forms.Select(attrs={'class': 'form-select'}),
             'delivery_number': forms.TextInput(attrs={'class': 'form-control'}),
-            'supplier_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'supplier_name': forms.Select(attrs={'class': 'form-select'}),
             'delivery_date': forms.DateInput(
                 attrs={'type': 'date', 'class': 'form-control'},
                 format='%Y-%m-%d'
@@ -86,11 +86,27 @@ class DeliveryNoteForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields['invoice'].queryset = Invoice.objects.exclude(
-            status='complete'
+        open_invoices = Invoice.objects.exclude(status='complete')
+
+        self.fields['invoice'].queryset = open_invoices
+
+        supplier_choices = [('', '---------')]
+        supplier_choices += [
+            (name, name)
+            for name in open_invoices
+                .exclude(supplier_name__isnull=True)
+                .exclude(supplier_name='')
+                .values_list('supplier_name', flat=True)
+                .distinct()
+                .order_by('supplier_name')
+        ]
+
+        self.fields['supplier_name'].widget = forms.Select(
+            choices=supplier_choices,
+            attrs={'class': 'form-select'}
         )
 
-        self.fields['delivery_date'].input_formats = ['%Y-%m-%d']    
+        self.fields['delivery_date'].input_formats = ['%Y-%m-%d']   
 
 
 class DeliveryItemForm(forms.ModelForm):
