@@ -15,10 +15,17 @@ class InvoiceForm(forms.ModelForm):
         widgets = {
             'invoice_number': forms.TextInput(attrs={'class': 'form-control'}),
             'supplier_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'invoice_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'invoice_date': forms.DateInput(
+                attrs={'type': 'date', 'class': 'form-control'},
+                format='%Y-%m-%d'
+            ),
             'file': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['invoice_date'].input_formats = ['%Y-%m-%d']
 
 class InvoiceItemForm(forms.ModelForm):
     class Meta:
@@ -59,7 +66,10 @@ class DeliveryNoteForm(forms.ModelForm):
             'invoice': forms.Select(attrs={'class': 'form-select'}),
             'delivery_number': forms.TextInput(attrs={'class': 'form-control'}),
             'supplier_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'delivery_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'delivery_date': forms.DateInput(
+                attrs={'type': 'date', 'class': 'form-control'},
+                format='%Y-%m-%d'
+            ),
             'file': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
         
@@ -67,9 +77,7 @@ class DeliveryNoteForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         self.fields['invoice'].queryset = Invoice.objects.filter(
-            delivery_notes__isnull=True
-
-    )
+            delivery_notes__isnull=True)
 
     def clean(self):
         cleaned_data = super().clean()
@@ -80,6 +88,11 @@ class DeliveryNoteForm(forms.ModelForm):
             raise forms.ValidationError('Der Lieferant des Lieferscheins muss mit dem Lieferanten der ausgewählten Rechnung übereinstimmen.')
 
         return cleaned_data
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['delivery_date'].input_formats = ['%Y-%m-%d']
 
 
 class DeliveryItemForm(forms.ModelForm):
