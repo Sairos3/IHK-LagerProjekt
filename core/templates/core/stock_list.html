@@ -28,12 +28,12 @@
     {% for item in stock_items %}
     <tr>
         <td>{{ item.item_name }}</td>
-        <td>{{ item.current_quantity }}</td>
+        <td>{{ item.current_quantity }} {{ item.unit }}</td>
         <td>{{ item.updated_at }}</td>
     </tr>
     {% empty %}
     <tr>
-        <td colspan="3" class="text-muted">No stock items found</td>
+        <td colspan="3" class="text-muted">Keine Lagerartikel gefunden</td>
     </tr>
     {% endfor %}
 </table>

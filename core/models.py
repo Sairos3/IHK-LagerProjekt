@@ -75,6 +75,7 @@ class DeliveryItem(models.Model):
 class StockItem(models.Model):
     item_name = models.CharField(max_length=255, unique=True)
     current_quantity = models.IntegerField(default=0)
+    unit = models.CharField(max_length=50, blank=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):

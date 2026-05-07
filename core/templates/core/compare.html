@@ -33,17 +33,26 @@
         <div class="row mb-3">
             <div class="col-md-4">
                 <div class="border rounded p-2">
-                    <strong>Gesamt erwartet:</strong> {{ group.total_expected }}
+                    <strong>Gesamt erwartet:</strong><br>
+                    {% for unit, qty in group.total_expected.items %}
+                        {{ qty }} {{ unit }}<br>
+                    {% endfor %}
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="border rounded p-2">
-                    <strong>Insgesamt geliefert:</strong> {{ group.total_delivered }}
+                    <strong>Insgesamt geliefert:</strong><br>
+                    {% for unit, qty in group.total_delivered.items %}
+                        {{ qty }} {{ unit }}<br>
+                    {% endfor %}
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="border rounded p-2">
-                    <strong>Differenz:</strong> {{ group.total_difference }}
+                    <strong>Differenz:</strong><br>
+                    {% for unit, qty in group.total_difference.items %}
+                        {{ qty }} {{ unit }}<br>
+                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -68,15 +77,15 @@
             {% for item in group.items %}
             <tr>
                 <td>{{ item.item_name }}</td>
-                <td>{{ item.expected_quantity }}</td>
-                <td>{{ item.delivered_quantity }}</td>
+                <td>{{ item.expected_quantity }} {{ item.unit }}</td>
+                <td>{{ item.delivered_quantity }} {{ item.unit }}</td>
                 <td>
                     <span class="
                         {% if item.difference == 0 %}text-success
                         {% elif item.difference < 0 %}text-warning
                         {% else %}text-danger
                         {% endif %}">
-                        {{ item.difference }}
+                        {{ item.difference }} {{ item.unit }}
                     </span>
                 </td>
                 <td>

@@ -155,16 +155,16 @@ def compare_documents(request):
 
         invoice_status = 'complete' if invoice.items.exists() else 'open'
         item_results = []
-        total_expected = 0
-        total_delivered = 0
+        total_expected = defaultdict(int)
+        total_delivered = defaultdict(int)
 
         for invoice_item in invoice.items.all():
             key = invoice_item.item_name.strip().lower()
             delivered_qty = delivered_map.get(key, 0)
             difference = delivered_qty - invoice_item.quantity
 
-            total_expected += invoice_item.quantity
-            total_delivered += delivered_qty
+            total_expected[invoice_item.unit] += invoice_item.quantity
+            total_delivered[invoice_item.unit] += delivered_qty
 
             if delivered_qty == 0:
                 status = 'Offen'
@@ -185,6 +185,7 @@ def compare_documents(request):
                 'expected_quantity': invoice_item.quantity,
                 'delivered_quantity': delivered_qty,
                 'difference': difference,
+                'unit': invoice_item.unit,
                 'status': status,
             })
 
@@ -195,9 +196,12 @@ def compare_documents(request):
             'invoice': invoice,
             'deliveries': linked_deliveries,
             'items': item_results,
-            'total_expected': total_expected,
-            'total_delivered': total_delivered,
-            'total_difference': total_delivered - total_expected,
+            'total_expected': dict(total_expected),
+            'total_delivered': dict(total_delivered),
+            'total_difference': {
+                unit: total_delivered[unit] - total_expected[unit]
+                for unit in total_expected
+            },
         })
 
     return render(request, 'core/compare.html', {'grouped_results': grouped_results})
@@ -220,26 +224,40 @@ def stock_list(request):
 @login_required
 def apply_stock_from_deliveries(request):
     delivery_items = DeliveryItem.objects.all()
-    aggregated = defaultdict(int)
+    aggregated = {}
 
     for item in delivery_items:
-        aggregated[item.item_name.strip()] += item.quantity
+        item_name = item.item_name.strip()
 
-    for item_name, quantity in aggregated.items():
+        if item_name not in aggregated:
+            aggregated[item_name] = {
+                'quantity': 0,
+                'unit': item.unit,
+            }
+
+        aggregated[item_name]['quantity'] += item.quantity
+
+    for item_name, data in aggregated.items():
         stock_item, _ = StockItem.objects.get_or_create(item_name=item_name)
+
+        quantity = data['quantity']
+        unit = data['unit']
+
         change = quantity - stock_item.current_quantity
 
-        if change != 0:
+        if change != 0 or stock_item.unit != unit:
             stock_item.current_quantity = quantity
+            stock_item.unit = unit
             stock_item.save()
 
-            StockMovement.objects.create(
-                stock_item=stock_item,
-                movement_type='goods_receipt',
-                quantity_change=change,
-                reason='Automatic stock update from deliveries',
-                created_by=request.user
-            )
+            if change != 0:
+                StockMovement.objects.create(
+                    stock_item=stock_item,
+                    movement_type='goods_receipt',
+                    quantity_change=change,
+                    reason='Automatic stock update from deliveries',
+                    created_by=request.user
+                )
 
     return redirect('stock_list')
 
