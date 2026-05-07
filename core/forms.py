@@ -72,12 +72,6 @@ class DeliveryNoteForm(forms.ModelForm):
             ),
             'file': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
-        
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.fields['invoice'].queryset = Invoice.objects.filter(
-            delivery_notes__isnull=True)
 
     def clean(self):
         cleaned_data = super().clean()
@@ -92,7 +86,11 @@ class DeliveryNoteForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields['delivery_date'].input_formats = ['%Y-%m-%d']
+        self.fields['invoice'].queryset = Invoice.objects.exclude(
+            status='complete'
+        )
+
+        self.fields['delivery_date'].input_formats = ['%Y-%m-%d']    
 
 
 class DeliveryItemForm(forms.ModelForm):
